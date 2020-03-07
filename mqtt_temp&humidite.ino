@@ -1,8 +1,8 @@
 
 /*
- ESP8266 MQTT - Déclenchement d'un relais
+ ESP8266 MQTT - Relevé de température et humidité via DHT11
  Création Dominique PAUL.
- Dépot Github : https://github.com/DomoticDIY/
+ Dépot Github : https://github.com/DomoticDIY/MQTT-ModuleDHT11
   Chaine YouTube du Tuto Vidéo : https://www.youtube.com/c/DomoticDIY
  
  Bibliothéques nécessaires :
