@@ -48,7 +48,7 @@ const char* mqtt_password = "_PASSWORD_";       // Mot de passe de connexion à 
 #define DHTPIN  2
 char* topicIn = "domoticz/out";                       // Nom du topic envoyé par Domoticz
 char* topicOut = "domoticz/in";                       // Nom du topic écouté par Domoticz
-float valHhum = 0.0;                                    // Variables contenant la valeur de l'humidité.
+float valHum = 0.0;                                    // Variables contenant la valeur de l'humidité.
 float valTemp = 0.0;                                    // Variables contenant la valeur de température.
 float valHum_T, valTemp_T;                            // Valeurs de relevé temporaires.
 #define tempsPause 120                                // Nbre de secondes de pause (3600 = 1H00)
