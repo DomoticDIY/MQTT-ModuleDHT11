@@ -9,8 +9,12 @@
   - pubsubclient : https://github.com/knolleary/pubsubclient
   - ArduinoJson : https://github.com/bblanchon/ArduinoJson
  Télécharger les bibliothèques, puis dans IDE : Faire Croquis / inclure une bibliothéque / ajouter la bibliothèque ZIP.
+ Puis dans IDE : Faire Croquis / inclure une bibliothéque / Gérer les bibliothèques, et ajouter :
+  - DHT Sensor Library by AdaFruit
+  - AdaFruit Unified sensor by AdaFruit
+ 
  Dans le gestionnaire de bibliothéque, charger le module ESP8266Wifi.
- Installaer le gestionnaire de carte ESP8266 version 2.5.0 
+ Installer le gestionnaire de carte ESP8266 version 2.5.0 
  Si besoin : URL à ajouter pour le Bord manager : http://arduino.esp8266.com/stable/package_esp8266com_index.json
  Adaptation pour reconnaissance dans Domoticz :
  Dans le fichier PubSubClient.h : La valeur du paramètre doit être augmentée à 512 octets. Cette définition se trouve à la ligne 26 du fichier.
@@ -44,10 +48,10 @@ const char* mqtt_password = "_PASSWORD_";       // Mot de passe de connexion à 
 #define DHTPIN  2
 char* topicIn = "domoticz/out";                       // Nom du topic envoyé par Domoticz
 char* topicOut = "domoticz/in";                       // Nom du topic écouté par Domoticz
-float valHhum = 0;                                    // Variables contenant la valeur de l'humidité.
-float valTemp = 0;                                    // Variables contenant la valeur de température.
+float valHhum = 0.0;                                    // Variables contenant la valeur de l'humidité.
+float valTemp = 0.0;                                    // Variables contenant la valeur de température.
 float valHum_T, valTemp_T;                            // Valeurs de relevé temporaires.
-#define tempsPause 30                                 // Nbre de secondes de pause (3600 = 1H00)
+#define tempsPause 120                                // Nbre de secondes de pause (3600 = 1H00)
 // ------------------------------------------------------------
 // Variables et constantes utilisateur :
 String nomModule = "Température & Humidité";          // Nom usuel de ce module. Sera visible uniquement dans les Log Domoticz.
@@ -57,7 +61,7 @@ int idxDevice = 29;                                   // Index du Device à acti
 
 WiFiClient espClient;
 PubSubClient client(espClient);
-DHT dht(DHTPIN, DHTTYPE);
+DHT dht(DHTPIN, DHTTYPE, 11);
 char buf[20];
 
 
@@ -74,14 +78,15 @@ void setup() {
 // *****************
 void loop() {
   if (!client.connected()) {
+    Serial.println("MQTT déconnecté, on reconnecte !");
     reconnect();
   } else {
     // On interroge la sonde de Température / Humidité.
-  getTempHum();
-  // Envoi de la données via JSON et MQTT
-    //SendData();
+    getTempHum();
+    // Envoi de la données via JSON et MQTT
+    SendData();
     // On met le système en pause pour un temps défini
-    pause(tempsPause * 1000);
+    delay(tempsPause * 1000);
   }
 }
 
@@ -181,9 +186,9 @@ void getTempHum() {
   // La valeur retournée n'es pas valide (isnan = is Not A Number).
     Serial.println("Erreur lors du relevé de l'humidité, on concerve l'ancienne valeur !");
   } else {
-  Serial.print("Valeur d'humidité relevée : ");
-  Serial.println(valHum_T);
-  valTemp = valHum_T;
+    Serial.print("Valeur d'humidité relevée : ");
+    Serial.println(valHum_T);
+    valHum = valHum_T;
   }
 }
 
@@ -193,9 +198,11 @@ void SendData () {
   // Parse l'objet root
   JsonObject &root = jsonBuffer.createObject();
   // On renseigne les variables.
-  root["command"] = "udevice";
-  root["idx"] = idxDevice;
-  root["nvalue"] = resultatCurrentData;
+  root["type"]    = "command";
+  root["param"]   = "udevice";
+  root["idx"]     = idxDevice;
+  root["nvalue"]  = 0;
+  root["svalue"]  = String(valTemp)+";"+String(valHum)+";0"; // txtValRetour;
       
   // On sérialise la variable JSON
   String messageOut;
