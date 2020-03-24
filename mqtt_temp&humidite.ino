@@ -7,7 +7,7 @@
  
  Bibliothéques nécessaires :
   - pubsubclient : https://github.com/knolleary/pubsubclient
-  - ArduinoJson : https://github.com/bblanchon/ArduinoJson
+  - ArduinoJson v5.13.3 : https://github.com/bblanchon/ArduinoJson
  Télécharger les bibliothèques, puis dans IDE : Faire Croquis / inclure une bibliothéque / ajouter la bibliothèque ZIP.
  Puis dans IDE : Faire Croquis / inclure une bibliothéque / Gérer les bibliothèques, et ajouter :
   - DHT Sensor Library by AdaFruit
